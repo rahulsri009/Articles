@@ -25,24 +25,26 @@ class ArticlesViewModel: NSObject {
     let networkManager:NetworkManager = NetworkManager()
     weak var reloadDelegate: ReloadDelegate?
     
-    let reloadTablView:()
     var nextPage: Int = 1
     var limit: Int = 10
-    
-    override init() {
-        super.init()
-        getArticles()
-    }
+    var articlesFetching: Bool = false
+    var fetchNext: Bool = true
     
     private func getArticles() {
+        articlesFetching = true
         networkManager.request(with: RequestEndPoint.getAtricles(page: nextPage, limit: limit), modelType: [Article].self) { (response, error) in
             if let articles:[Article] = response {
                 self.nextPage += 1
-                print("Articles: \(articles.count)")
-                self.prepareArticlesDataSource(articles: articles)
+                if articles.count > 0 {
+                    self.fetchNext = true
+                    self.prepareArticlesDataSource(articles: articles)
+                } else {
+                    self.fetchNext = false
+                }
                 self.reloadDelegate?.reload()
+                self.articlesFetching = false
             } else {
-                print(error ?? "Error while requesting getPersonalityQuestions")
+                print(error ?? "Error while requesting getAtricles")
             }
         }
     }
@@ -75,7 +77,7 @@ class ArticlesViewModel: NSObject {
 
 extension ArticlesViewModel: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return fetchNext ? 2 : 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -99,6 +101,12 @@ extension ArticlesViewModel: UITableViewDataSource, UITableViewDelegate {
             return UITableView.automaticDimension
         } else {
             return 200
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.section == 1, !articlesFetching, fetchNext {
+            getArticles()
         }
     }
 }
