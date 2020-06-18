@@ -34,7 +34,7 @@ class ArticleTableViewModel: NSObject {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         
         if let date: Date = dateFormatter.date(from: dataModel.createdAt) {
-            let difference = Calendar.current.dateComponents([.day, .hour, .minute, .second], from: Date(), to: date)
+            let difference = Calendar.current.dateComponents([.day, .hour, .minute, .second], from: date, to: Date())
             if let days = difference.day, days > 0 {
                 return "\(days) days"
             } else if let hours = difference.hour, hours > 0 {
@@ -77,10 +77,10 @@ class ArticleTableViewModel: NSObject {
     }
     
     func getNumberOfLikes() -> String {
-        return dataModel.likes.roundedWithAbbreviations
+        return dataModel.likes.roundedWithAbbreviations + " Likes"
     }
     
     func getNumberOfComments() -> String {
-        return dataModel.comments.roundedWithAbbreviations
+        return dataModel.comments.roundedWithAbbreviations + " Comments"
     }
 }

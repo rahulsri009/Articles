@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class ArticleTableViewCell: UITableViewCell {
 
@@ -48,12 +49,12 @@ class ArticleTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
-        if let avatarUrl = viewModel.getAvatarUrl(), let imageData = try? Data(contentsOf: avatarUrl) {
-            avatarImageView.image = UIImage(data: imageData)
+        if let avatarUrl = viewModel.getAvatarUrl() {
+            self.avatarImageView.kf.setImage(with: avatarUrl)
         }
-        if let articleImageUrl = viewModel.getImageUrl(), let imageData = try? Data(contentsOf: articleImageUrl) {
+        if let articleImageUrl = viewModel.getImageUrl() {
             articleImageView.isHidden = false
-            articleImageView.image = UIImage(data: imageData)
+            articleImageView.kf.setImage(with: articleImageUrl)
         }
         titleLabel.isHidden = false
         contentLabel.isHidden = false
